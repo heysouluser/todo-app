@@ -6,13 +6,24 @@ import Footer from '../footer';
 
 export default class App extends Component {
 
+   maxId = 1;
+
    state = {
       todoData: [
-         { task: 'Completed task', id: 1, completed: false },
-         { task: 'Editing task', id: 2, completed: false },
-         { task: 'Active task', id: 3, completed: false },
+         this.createTodoItem('Completed task'),
+         this.createTodoItem('Editing task'),
+         this.createTodoItem('Active task'),
       ]
    };
+
+   createTodoItem(task) {
+      return {
+         task,
+         id: this.maxId++,
+         completed: false,
+         editing: false,
+      }
+   }
 
    deleteItem = (id) => {
       this.setState(({ todoData }) => {
@@ -21,8 +32,29 @@ export default class App extends Component {
          return {
             todoData: newArr
          }
+      });
+   };
+
+   onToggleComplete = (id) => {
+      this.setState(({ todoData }) => {
+         const idx = todoData.findIndex(el => el.id === id);
+         // update object
+         const oldItem = todoData[idx];
+         const newItem = {
+            ...oldItem,
+            completed: !oldItem.completed
+         };
+         // construct new array
+         const newArr = [...todoData.slice(0, idx),
+            newItem,
+         ...todoData.slice(idx + 1)
+         ];
+
+         return {
+            todoData: newArr
+         }
       })
-   }
+   };
 
    render() {
       return (
@@ -31,6 +63,7 @@ export default class App extends Component {
             <Main
                tasks={this.state.todoData}
                onDeleted={this.deleteItem}
+               onToggleComplete={this.onToggleComplete}
             />
             <Footer />
          </section>

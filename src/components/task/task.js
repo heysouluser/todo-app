@@ -4,12 +4,11 @@ import './task.css';
 export default class Task extends Component {
 
    render() {
-      const { task, onDeleted, onLabelClick } = this.props;
-
+      const { task, onDeleted, onToggleComplete } = this.props;
       return (
          <div className='view'>
             <input className="toggle" type="checkbox" />
-            <label onClick={onLabelClick}>
+            <label onClick={onToggleComplete}>
                <span className="description">{task}</span>
                <span className="created">created 17 seconds ago</span>
             </label>

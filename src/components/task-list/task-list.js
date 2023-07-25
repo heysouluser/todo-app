@@ -4,35 +4,18 @@ import Task from '../task';
 
 export default class TaskList extends Component {
 
-   state = {
-      completed: false,
-      editing: false
-   };
-
-   labelClick = () => {
-      this.setState(({ completed }) => {
-         return {
-            completed: !completed
-         }
-      });
-   }
 
    render() {
-      const { tasks, onDeleted } = this.props;
-      const { completed, editing } = this.state;
+      const { tasks, onDeleted, onToggleComplete } = this.props;
       let classNames = '';
-
-      if (completed) {
-         classNames += ' completed';
-      }
-
-      if (editing) {
-         classNames += ' editing';
-      }
 
       const todos = tasks.map(item => {
 
-         const { id, ...itemProps } = item;
+         const { id, completed, ...itemProps } = item;
+
+         if (completed) {
+            classNames += ' completed';
+         }
 
          return (
             <li key={id} className={classNames}>
@@ -40,6 +23,7 @@ export default class TaskList extends Component {
                   {...itemProps}
                   onLabelClick={this.labelClick}
                   onDeleted={() => onDeleted(id)}
+                  onToggleComplete={() => onToggleComplete(id)}
                />
             </li>
          )
