@@ -1,25 +1,55 @@
-import { React } from 'react';
+import { React, Component } from 'react';
 import './task-list.css';
 import Task from '../task';
 
-const TaskList = ({ tasks }) => {
+export default class TaskList extends Component {
 
-   const todos = tasks.map(item => {
+   state = {
+      completed: false,
+      editing: false
+   };
 
-      const { id, completed, editing, ...itemProps } = item;
+   labelClick = () => {
+      this.setState(({ completed }) => {
+         return {
+            completed: !completed
+         }
+      });
+   }
+
+   render() {
+      const { tasks, onDeleted } = this.props;
+      const { completed, editing } = this.state;
+      let classNames = '';
+
+      if (completed) {
+         classNames += ' completed';
+      }
+
+      if (editing) {
+         classNames += ' editing';
+      }
+
+      const todos = tasks.map(item => {
+
+         const { id, ...itemProps } = item;
+
+         return (
+            <li key={id} className={classNames}>
+               <Task
+                  {...itemProps}
+                  onLabelClick={this.labelClick}
+                  onDeleted={() => onDeleted(id)}
+               />
+            </li>
+         )
+      })
 
       return (
-         <li key={id} className={completed ? "completed" : editing ? "editing" : ""}>
-            <Task {...itemProps} />
-         </li>
-      )
-   })
+         <ul className='todo-list'>
+            {todos}
+         </ul>
+      );
+   }
 
-   return (
-      <ul className='todo-list'>
-         {todos}
-      </ul>
-   );
 }
-
-export default TaskList;
