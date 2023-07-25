@@ -7,25 +7,19 @@ export default class TaskList extends Component {
 
    render() {
       const { tasks, onDeleted, onToggleComplete } = this.props;
-      let classNames = '';
 
       const todos = tasks.map(item => {
 
-         const { id, completed, ...itemProps } = item;
-
-         if (completed) {
-            classNames += ' completed';
-         }
+         const { id, ...itemProps } = item;
 
          return (
-            <li key={id} className={classNames}>
-               <Task
-                  {...itemProps}
-                  onLabelClick={this.labelClick}
-                  onDeleted={() => onDeleted(id)}
-                  onToggleComplete={() => onToggleComplete(id)}
-               />
-            </li>
+
+            <Task
+               {...itemProps}
+               onDeleted={() => onDeleted(id)}
+               onToggleComplete={() => onToggleComplete(id)}
+               key={id}
+            />
          )
       })
 
