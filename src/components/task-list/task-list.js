@@ -4,9 +4,8 @@ import Task from '../task';
 
 export default class TaskList extends Component {
 
-
    render() {
-      const { tasks, onDeleted, onToggleComplete } = this.props;
+      const { tasks, onDeleted, onToggleComplete, onToggleEditing } = this.props;
 
       const todos = tasks.map(item => {
 
@@ -18,7 +17,9 @@ export default class TaskList extends Component {
                {...itemProps}
                onDeleted={() => onDeleted(id)}
                onToggleComplete={() => onToggleComplete(id)}
+               onToggleEditing={() => onToggleEditing(id)}
                key={id}
+
             />
          )
       })

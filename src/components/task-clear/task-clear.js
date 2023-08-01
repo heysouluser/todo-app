@@ -1,10 +1,14 @@
 import { React } from 'react';
 import './task-clear.css';
 
-const TaskClear = () => {
+const TaskClear = ({ clearCompleted }) => {
 
    return (
-      <button className='clear-completed'>Clear completed</button>
+      <button
+         className='clear-completed'
+         onClick={clearCompleted}>
+         Clear completed
+      </button>
    );
 }
 

@@ -1,13 +1,15 @@
-import { React } from 'react';
+import { React, Component } from 'react';
 import './task-count.css';
 
-const TaskCount = () => {
+export default class TaskCount extends Component {
 
-   return (
-      <span className="todo-count">
-
-      </span>
-   );
+   render() {
+      const { toDo } = this.props;
+      return (
+         <span className="todo-count" >
+            {toDo} items left
+         </span >
+      );
+   }
 }
 
-export default TaskCount;
