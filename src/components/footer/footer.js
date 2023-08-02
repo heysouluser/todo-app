@@ -4,12 +4,12 @@ import TaskCount from '../task-count';
 import TasksFilter from '../tasks-filter';
 import TaskClear from '../task-clear';
 
-const Footer = ({ toDo, filter, onFiltered, clearCompleted }) => {
+const Footer = ({ toDo, currentFilter, onFiltered, clearCompleted }) => {
    return (
       <footer className='footer'>
          <TaskCount toDo={toDo} />
          <TasksFilter
-            filter={filter}
+            currentFilter={currentFilter}
             onFiltered={onFiltered} />
          <TaskClear clearCompleted={clearCompleted} />
       </footer>

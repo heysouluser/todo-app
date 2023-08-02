@@ -3,9 +3,13 @@ import './task.css';
 
 export default class Task extends Component {
 
-   labelId = 1;
+   static defaultProps = {
+      completed: false,
+      editing: false,
+   }
 
    render() {
+
       const { task, completed, editing, id, onDeleted, onToggleComplete, onToggleEditing } = this.props;
 
       let classNames = '';
@@ -20,8 +24,8 @@ export default class Task extends Component {
       return (
          <li key={id} className={classNames}>
             <div className='view'>
-               <input className="toggle" id={this.labelId++} type="checkbox" />
-               <label htmlFor={this.labelId++} onClick={onToggleComplete}>
+               <input className="toggle" type="checkbox" onChange={onToggleComplete} checked={completed} />
+               <label onClick={onToggleComplete}>
                   <span className="description">{task}</span>
                   <span className="created">created 17 seconds ago</span>
                </label>
