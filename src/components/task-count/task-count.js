@@ -1,10 +1,11 @@
 import { React, Component } from 'react';
 import './task-count.css';
+import PropTypes from 'prop-types';
 
 export default class TaskCount extends Component {
 
-   static defaultProps = {
-      toDo: 'Show how much'
+   static propTypes = {
+      toDo: PropTypes.number.isRequired
    }
 
    render() {

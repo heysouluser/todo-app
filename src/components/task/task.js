@@ -1,5 +1,6 @@
 import { React, Component } from 'react';
 import './task.css';
+import PropTypes from 'prop-types';
 
 export default class Task extends Component {
 
@@ -8,10 +9,16 @@ export default class Task extends Component {
       editing: false,
    }
 
+   static propTypes = {
+      completed: PropTypes.bool,
+      editing: PropTypes.bool,
+      task: PropTypes.string.isRequired,
+      onDeleted: PropTypes.func.isRequired
+   }
+
    render() {
 
       const { task, completed, editing, id, onDeleted, onToggleComplete, onToggleEditing } = this.props;
-
       let classNames = '';
       if (completed) {
          classNames += 'completed';

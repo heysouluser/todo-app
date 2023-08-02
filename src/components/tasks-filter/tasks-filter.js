@@ -1,10 +1,16 @@
 import { React, Component } from 'react';
 import './tasks-filter.css';
+import PropTypes from 'prop-types';
 
 export default class TasksFilter extends Component {
 
    static defaultProps = {
       onFiltered: () => { console.log('Нужно изменить состояние') }
+   }
+
+   static propTypes = {
+      currentFilter: PropTypes.string.isRequired,
+      onFiltered: PropTypes.func
    }
 
    filterId = 10;

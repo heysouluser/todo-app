@@ -1,5 +1,6 @@
 import { React } from 'react';
 import './task-clear.css';
+import PropTypes from 'prop-types';
 
 const TaskClear = ({ clearCompleted }) => {
 
@@ -10,6 +11,10 @@ const TaskClear = ({ clearCompleted }) => {
          Clear completed
       </button>
    );
+}
+
+TaskClear.propTypes = {
+   clearCompleted: PropTypes.func.isRequired
 }
 
 export default TaskClear;
