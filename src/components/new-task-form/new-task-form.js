@@ -3,33 +3,19 @@ import './new-task-form.css';
 
 export default class NewTaskForm extends Component {
 
-   state = {
-      label: ''
-   }
-
-   onLabelChange = (e) => {
-      this.setState({
-         label: e.target.value
-      })
-   }
-
-   onSubmit = (e) => {
-      e.preventDefault();
-      this.props.onAdded(this.state.label.trim());
-      this.setState({
-         label: ''
-      })
-   }
-
    render() {
+
+      const { label, onLabelChange, onSubmit, error } = this.props;
+
       return (
-         <form onSubmit={this.onSubmit}>
-            <input className='new-todo'
+         <form onSubmit={onSubmit}>
+            <input className={error ? 'new-todo error' : 'new-todo'}
                placeholder="What needs to be done?"
                autoFocus
-               onChange={this.onLabelChange}
-               value={this.state.label}>
+               onChange={onLabelChange}
+               value={label}>
             </input>
+            {error ? <div className='error-message'>{error}</div> : ''}
          </form>
       );
    }

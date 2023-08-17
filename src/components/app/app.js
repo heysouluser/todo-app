@@ -15,6 +15,9 @@ export default class App extends Component {
          this.createTodoItem('Active task'),
       ],
       filter: 'All',
+      label: '',
+      editLabel: '',
+      error: null
    };
 
    createTodoItem(task) {
@@ -23,22 +26,21 @@ export default class App extends Component {
          id: this.maxId++,
          completed: false,
          editing: false,
+         date: new Date()
       }
    }
 
    deleteItem = (id) => {
       this.setState(({ todoData }) => {
-         const idx = todoData.findIndex(el => el.id === id);
-         const newArr = [...todoData.slice(0, idx), ...todoData.slice(idx + 1)];
          return {
-            todoData: newArr
+            todoData: todoData.filter(t => t.id !== id)
          }
       });
    };
 
    addItem = (text) => {
       const newItem = this.createTodoItem(text);
-      if (text !== '') {
+      if (text.trim() !== '') {
          this.setState(({ todoData }) => {
             const newArr = [
                ...todoData,
@@ -47,6 +49,10 @@ export default class App extends Component {
             return {
                todoData: newArr
             }
+         })
+      } else {
+         this.setState({
+            error: 'Необходимо заполнить поле'
          })
       }
    }
@@ -81,6 +87,21 @@ export default class App extends Component {
       })
    }
 
+   onLabelChange = (e) => {
+      this.setState({
+         label: e.target.value,
+         error: null
+      })
+   }
+
+   onSubmit = (e) => {
+      e.preventDefault();
+      this.addItem(this.state.label);
+      this.setState({
+         label: ''
+      })
+   }
+
    onFiltered = (e) => {
       const filter = e.target.textContent;
       this.setState({ filter });
@@ -94,9 +115,54 @@ export default class App extends Component {
       })
    }
 
+   onEditLabelChange = (e) => {
+      this.setState({
+         editLabel: e.target.value
+      })
+   }
+
+   onEditingSubmit = (e, id) => {
+      e.preventDefault();
+
+      this.setState(({ todoData }) => {
+         const newLabel = todoData.map((item) => {
+            if (item.id === id) {
+               return {
+                  ...item,
+                  task: this.state.editLabel,
+                  editing: false,
+               };
+            }
+            return item;
+         });
+         return {
+            todoData: newLabel,
+            editLabel: '',
+         };
+      });
+   }
+
+   closeEditing = (e, id) => {
+      if (e.key === 'Escape') {
+         this.setState(({ todoData }) => {
+            const newLabel = todoData.map((item) => {
+               if (item.id === id) {
+                  return {
+                     ...item,
+                     editing: false,
+                  };
+               }
+               return item;
+            });
+            return {
+               todoData: newLabel,
+            };
+         });
+      }
+   }
 
    render() {
-      const { todoData, filter } = this.state;
+      const { todoData, filter, label, editLabel, error } = this.state;
 
       const doneCount = todoData.filter(el => el.completed).length;
       const todoCount = todoData.length - doneCount;
@@ -112,14 +178,24 @@ export default class App extends Component {
          }
       })
 
+
       return (
          <section className='todoapp'>
-            <Header onAdded={this.addItem} />
+            <Header
+               label={label}
+               error={error}
+               onLabelChange={this.onLabelChange}
+               onSubmit={this.onSubmit}
+            />
             <Main
                tasks={filteredData}
+               editLabel={editLabel}
                onDeleted={this.deleteItem}
                onToggleComplete={this.onToggleComplete}
                onToggleEditing={this.onToggleEditing}
+               onEditLabelChange={this.onEditLabelChange}
+               onEditingSubmit={this.onEditingSubmit}
+               closeEditing={this.closeEditing}
             />
             <Footer
                toDo={todoCount}
