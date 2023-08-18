@@ -16,7 +16,6 @@ export default class App extends Component {
       ],
       filter: 'All',
       label: '',
-      editLabel: '',
       error: null
    };
 
@@ -115,21 +114,13 @@ export default class App extends Component {
       })
    }
 
-   onEditLabelChange = (e) => {
-      this.setState({
-         editLabel: e.target.value
-      })
-   }
-
-   onEditingSubmit = (e, id) => {
-      e.preventDefault();
-
+   onEditingSubmit = (id, newText) => {
       this.setState(({ todoData }) => {
          const newLabel = todoData.map((item) => {
             if (item.id === id) {
                return {
                   ...item,
-                  task: this.state.editLabel,
+                  task: newText,
                   editing: false,
                };
             }
@@ -137,7 +128,6 @@ export default class App extends Component {
          });
          return {
             todoData: newLabel,
-            editLabel: '',
          };
       });
    }
@@ -193,7 +183,6 @@ export default class App extends Component {
                onDeleted={this.deleteItem}
                onToggleComplete={this.onToggleComplete}
                onToggleEditing={this.onToggleEditing}
-               onEditLabelChange={this.onEditLabelChange}
                onEditingSubmit={this.onEditingSubmit}
                closeEditing={this.closeEditing}
             />

@@ -10,7 +10,7 @@ export default class TaskList extends Component {
    }
 
    render() {
-      const { tasks, onDeleted, onToggleComplete, onToggleEditing, onEditLabelChange, editLabel, onEditingSubmit, closeEditing } = this.props;
+      const { tasks, onDeleted, onToggleComplete, onToggleEditing, onEditingSubmit, closeEditing } = this.props;
 
       const todos = tasks.map(item => {
 
@@ -24,9 +24,7 @@ export default class TaskList extends Component {
                onDeleted={() => onDeleted(id)}
                onToggleComplete={() => onToggleComplete(id)}
                onToggleEditing={() => onToggleEditing(id)}
-               onEditLabelChange={onEditLabelChange}
-               editLabel={editLabel}
-               onEditingSubmit={(e) => onEditingSubmit(e, id)}
+               onEditingSubmit={() => onEditingSubmit(id)}
                closeEditing={(e) => closeEditing(e, id)}
             />
          )

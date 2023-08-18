@@ -18,9 +18,29 @@ export default class Task extends Component {
       onDeleted: PropTypes.func.isRequired
    }
 
+   state = {
+      edit: this.props.task
+   }
+
+   onEditLabelChange = (e) => {
+      this.setState({
+         edit: e.target.value
+      })
+   }
+
+   onEditingSubmit = (e) => {
+      e.preventDefault();
+
+      if (this.state.edit.trim() === '') {
+         return;
+      }
+
+      this.props.onEditingSubmit(this.state.edit);
+   }
+
    render() {
 
-      const { task, completed, editing, id, date, onDeleted, onToggleComplete, onToggleEditing, onEditLabelChange, editLabel, onEditingSubmit, closeEditing } = this.props;
+      const { task, completed, editing, id, date, onDeleted, onToggleComplete, onToggleEditing, closeEditing } = this.props;
       let classNames = '';
       if (completed) {
          classNames += 'completed';
@@ -50,11 +70,11 @@ export default class Task extends Component {
                   </div >
                )
                : (
-                  <form onSubmit={onEditingSubmit}>
+                  <form onSubmit={(e) => this.onEditingSubmit(e)}>
                      <input
                         className='edit'
-                        value={editLabel}
-                        onChange={onEditLabelChange}
+                        value={this.state.edit}
+                        onChange={this.onEditLabelChange}
                         onBlur={onToggleEditing}
                         onKeyDown={closeEditing}
                         autoFocus
