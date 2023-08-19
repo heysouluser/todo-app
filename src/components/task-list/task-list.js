@@ -24,7 +24,7 @@ export default class TaskList extends Component {
                onDeleted={() => onDeleted(id)}
                onToggleComplete={() => onToggleComplete(id)}
                onToggleEditing={() => onToggleEditing(id)}
-               onEditingSubmit={() => onEditingSubmit(id)}
+               onEditingSubmit={(newText) => onEditingSubmit(id, newText)}
                closeEditing={(e) => closeEditing(e, id)}
             />
          )

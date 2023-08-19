@@ -24,22 +24,16 @@ export default class Task extends Component {
 
    onEditLabelChange = (e) => {
       this.setState({
-         edit: e.target.value
+         edit: e.target.value.trimStart()
       })
    }
 
-   onEditingSubmit = (e) => {
+   onEditing = (e) => {
       e.preventDefault();
-
-      if (this.state.edit.trim() === '') {
-         return;
-      }
-
       this.props.onEditingSubmit(this.state.edit);
    }
 
    render() {
-
       const { task, completed, editing, id, date, onDeleted, onToggleComplete, onToggleEditing, closeEditing } = this.props;
       let classNames = '';
       if (completed) {
@@ -49,7 +43,6 @@ export default class Task extends Component {
       if (editing) {
          classNames += 'editing';
       }
-
       return (
          <li key={id} className={classNames}>
             {!editing
@@ -70,7 +63,7 @@ export default class Task extends Component {
                   </div >
                )
                : (
-                  <form onSubmit={(e) => this.onEditingSubmit(e)}>
+                  <form onSubmit={this.onEditing}>
                      <input
                         className='edit'
                         value={this.state.edit}
@@ -78,6 +71,7 @@ export default class Task extends Component {
                         onBlur={onToggleEditing}
                         onKeyDown={closeEditing}
                         autoFocus
+                        required
                      />
                   </form>
                )
