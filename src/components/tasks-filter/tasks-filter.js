@@ -1,36 +1,26 @@
-import { React, Component } from 'react';
+import { Component } from 'react';
 import './tasks-filter.css';
 import PropTypes from 'prop-types';
 
 export default class TasksFilter extends Component {
+  filterId = 10;
 
-   static defaultProps = {
-      onFiltered: () => { console.log('Нужно изменить состояние') }
-   }
+  render() {
+    const { currentFilter, onFiltered } = this.props;
+    const filters = ['All', 'Active', 'Completed'];
 
-   static propTypes = {
-      currentFilter: PropTypes.string.isRequired,
-      onFiltered: PropTypes.func
-   }
+    const buttons = filters.map((item) => (
+      <li key={this.filterId++}>
+        <button type="button" className={currentFilter === item ? 'selected' : ''} onClick={onFiltered}>
+          {item}
+        </button>
+      </li>
+    ));
 
-   filterId = 10;
-
-   render() {
-      const { currentFilter, onFiltered } = this.props;
-      const filters = ['All', 'Active', 'Completed'];
-
-      const buttons = filters.map(item => {
-
-         return (
-            <li key={this.filterId++}>
-               <button type='button' className={currentFilter === item ? 'selected' : ''} onClick={onFiltered}>{item}</button>
-            </li>
-         )
-      })
-
-      return (
-         <ul className='filters'>{buttons}</ul>
-      );
-   }
-
+    return <ul className="filters">{buttons}</ul>;
+  }
 }
+
+TasksFilter.propTypes = {
+  currentFilter: PropTypes.string.isRequired,
+};

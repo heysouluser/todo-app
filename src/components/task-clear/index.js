@@ -1,3 +1,3 @@
-import TaskClear from "./task-clear";
+import TaskClear from './task-clear';
 
 export default TaskClear;
