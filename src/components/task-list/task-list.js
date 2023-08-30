@@ -5,7 +5,6 @@ import Task from '../task';
 function TaskList({ tasks, onDeleted, onToggleComplete, onToggleEditing, onEditingSubmit, closeEditing }) {
   const todos = tasks.map((item) => {
     const { id, ...itemProps } = item;
-
     return (
       <Task
         {...itemProps}

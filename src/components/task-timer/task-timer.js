@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
 import './task-timer.css';
 
-function TaskTimer() {
+function TaskTimer({ min, sec }) {
   return (
     <>
       <button className="icon icon-play" type="button" aria-label="play" />
       <button className="icon icon-pause" type="button" aria-label="pause" />
-      <span className="timer">12:25</span>
+      <span className="timer">{min < 10 ? `0${min}` : min}:{sec < 10 ? `0${sec}` : sec}</span>
     </>
   );
 }

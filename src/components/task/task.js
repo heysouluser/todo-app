@@ -25,7 +25,7 @@ export default class Task extends Component {
   };
 
   render() {
-    const { task, completed, editing, id, date, onDeleted, onToggleComplete, onToggleEditing, closeEditing } =
+    const { task, completed, editing, id, date, onDeleted, onToggleComplete, onToggleEditing, closeEditing, min, sec } =
       this.props;
     let classNames = '';
     if (completed) {
@@ -43,7 +43,7 @@ export default class Task extends Component {
             <label>
               <span className="title">{task}</span>
               <span className="description">
-                <TaskTimer />
+                <TaskTimer min={min} sec={sec} />
               </span>
               <span className="description created">
                 создано {formatDistanceToNow(date, { includeSeconds: true, addSuffix: true, locale: ru })}

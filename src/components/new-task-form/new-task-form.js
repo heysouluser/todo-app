@@ -12,16 +12,25 @@ function NewTaskForm({ label, handleChange, onSubmit, error, min, sec }) {
   };
 
   return (
-    <form className="new-todo-form" onSubmit={onSubmit}>
+    <form className={error ? 'new-todo-form error' : 'new-todo-form'} onSubmit={onSubmit}>
+      <input className="new-todo" name="task" placeholder="Task" onChange={onLabelChange} value={label} />
       <input
-        className={error ? 'new-todo error' : 'new-todo'}
-        name="task"
-        placeholder="Task"
-        onChange={onLabelChange}
-        value={label}
+        className="new-todo-form__timer"
+        name="min"
+        placeholder="Min"
+        onChange={onMinChange}
+        value={min}
+        pattern="^(?:[1-9]|[1-5][0-9])$"
       />
-      <input className="new-todo-form__timer" name="min" placeholder="Min" onChange={onMinChange} value={min} />
-      <input className="new-todo-form__timer" name="sec" placeholder="Sec" onChange={onSecChange} value={sec} />
+      <input
+        className="new-todo-form__timer"
+        name="sec"
+        placeholder="Sec"
+        onChange={onSecChange}
+        value={sec}
+        pattern="^(?:[1-9]|[1-5][0-9])$"
+      />
+      <button type="submit" aria-label="submit" />
       {error ? <div className="error-message">{error}</div> : ''}
     </form>
   );

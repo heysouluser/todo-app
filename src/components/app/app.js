@@ -9,7 +9,7 @@ export default class App extends Component {
   maxId = 1;
 
   state = {
-    todoData: [this.createTodoItem('Completed')],
+    todoData: [this.createTodoItem('Completed', '10', '34')],
     filter: 'All',
     label: '',
     error: null,
@@ -23,9 +23,9 @@ export default class App extends Component {
     }));
   };
 
-  addItem = (text) => {
-    const newItem = this.createTodoItem(text);
-    if (text.trim() !== '') {
+  addItem = (text, min, sec) => {
+    const newItem = this.createTodoItem(text, min, sec);
+    if (text.trim() !== '' && min.trim() !== '' && sec.trim() !== '') {
       this.setState(({ todoData }) => {
         const newArr = [...todoData, newItem];
         return {
@@ -71,9 +71,11 @@ export default class App extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    this.addItem(this.state.label);
+    this.addItem(this.state.label, this.state.min, this.state.sec);
     this.setState({
       label: '',
+      min: '',
+      sec: '',
     });
   };
 
@@ -125,13 +127,15 @@ export default class App extends Component {
     }
   };
 
-  createTodoItem(task) {
+  createTodoItem(task, min, sec) {
     return {
       task,
       id: this.maxId++,
       completed: false,
       editing: false,
       date: new Date(),
+      min,
+      sec,
     };
   }
 
