@@ -9,10 +9,12 @@ export default class App extends Component {
   maxId = 1;
 
   state = {
-    todoData: [this.createTodoItem('Completed task'), this.createTodoItem('Editing task')],
+    todoData: [this.createTodoItem('Completed')],
     filter: 'All',
     label: '',
     error: null,
+    min: '',
+    sec: '',
   };
 
   deleteItem = (id) => {
@@ -60,9 +62,9 @@ export default class App extends Component {
     }));
   };
 
-  onLabelChange = (e) => {
+  handleChange = (property, value) => {
     this.setState({
-      label: e.target.value,
+      [property]: value,
       error: null,
     });
   };
@@ -134,7 +136,7 @@ export default class App extends Component {
   }
 
   render() {
-    const { todoData, filter, label, editLabel, error } = this.state;
+    const { todoData, filter, label, editLabel, error, min, sec } = this.state;
 
     const doneCount = todoData.filter((el) => el.completed).length;
     const todoCount = todoData.length - doneCount;
@@ -152,7 +154,14 @@ export default class App extends Component {
 
     return (
       <section className="todoapp">
-        <Header label={label} error={error} onLabelChange={this.onLabelChange} onSubmit={this.onSubmit} />
+        <Header
+          label={label}
+          error={error}
+          handleChange={this.handleChange}
+          onSubmit={this.onSubmit}
+          min={min}
+          sec={sec}
+        />
         <Main
           tasks={filteredData}
           editLabel={editLabel}
