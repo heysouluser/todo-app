@@ -17,6 +17,12 @@ export default class App extends Component {
     sec: '',
   };
 
+  updateTodoData = (id, newData) => {
+    this.setState((prevState) => ({
+      todoData: prevState.todoData.map((todoItem) => (todoItem.id === id ? { ...todoItem, ...newData } : todoItem)),
+    }));
+  };
+
   deleteItem = (id) => {
     const todoItem = this.findTodoById(id);
     if (todoItem && todoItem.timerId) {
@@ -100,49 +106,16 @@ export default class App extends Component {
   };
 
   onEditingSubmit = (id, newText) => {
-    this.setState(({ todoData }) => {
-      const newLabel = todoData.map((item) => {
-        if (item.id === id) {
-          return {
-            ...item,
-            task: newText,
-            editing: false,
-          };
-        }
-        return item;
-      });
-      return {
-        todoData: newLabel,
-      };
-    });
+    this.updateTodoData(id, { task: newText, editing: false });
   };
 
   closeEditing = (e, id) => {
     if (e.key === 'Escape') {
-      this.setState(({ todoData }) => {
-        const newLabel = todoData.map((item) => {
-          if (item.id === id) {
-            return {
-              ...item,
-              editing: false,
-            };
-          }
-          return item;
-        });
-        return {
-          todoData: newLabel,
-        };
-      });
+      this.updateTodoData(id, { editing: false });
     }
   };
 
   findTodoById = (id) => this.state.todoData.find((el) => el.id === id);
-
-  updateTodoData = (id, newData) => {
-    this.setState((prevState) => ({
-      todoData: prevState.todoData.map((todoItem) => (todoItem.id === id ? { ...todoItem, ...newData } : todoItem)),
-    }));
-  };
 
   stopTimer = (id) => {
     const todoItem = this.findTodoById(id);
