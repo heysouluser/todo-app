@@ -89,6 +89,11 @@ export default class App extends Component {
   };
 
   clearCompleted = () => {
+    this.state.todoData
+      .filter((item) => item.completed === true && item.timerId !== null)
+      .forEach((item) => {
+        clearInterval(item.timerId);
+      });
     this.setState(({ todoData }) => ({
       todoData: todoData.filter((item) => item.completed !== true),
     }));
