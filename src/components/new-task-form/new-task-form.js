@@ -1,14 +1,36 @@
 import './new-task-form.css';
 
-function NewTaskForm({ label, onLabelChange, onSubmit, error }) {
+function NewTaskForm({ label, handleChange, onSubmit, error, min, sec }) {
+  const onLabelChange = (e) => {
+    handleChange('label', e.target.value);
+  };
+  const onMinChange = (e) => {
+    handleChange('min', e.target.value);
+  };
+  const onSecChange = (e) => {
+    handleChange('sec', e.target.value);
+  };
+
   return (
-    <form onSubmit={onSubmit}>
+    <form className={error ? 'new-todo-form error' : 'new-todo-form'} onSubmit={onSubmit}>
+      <input className="new-todo" name="task" placeholder="Task" onChange={onLabelChange} value={label} />
       <input
-        className={error ? 'new-todo error' : 'new-todo'}
-        placeholder="What needs to be done?"
-        onChange={onLabelChange}
-        value={label}
+        className="new-todo-form__timer"
+        name="min"
+        placeholder="Min"
+        onChange={onMinChange}
+        value={min}
+        pattern="^(?:[1-9]|[1-5][0-9])$"
       />
+      <input
+        className="new-todo-form__timer"
+        name="sec"
+        placeholder="Sec"
+        onChange={onSecChange}
+        value={sec}
+        pattern="^(?:[1-9]|[1-5][0-9])$"
+      />
+      <button type="submit" aria-label="submit" />
       {error ? <div className="error-message">{error}</div> : ''}
     </form>
   );

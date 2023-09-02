@@ -2,9 +2,18 @@ import './task-list.css';
 
 import Task from '../task';
 
-function TaskList({ tasks, onDeleted, onToggleComplete, onToggleEditing, onEditingSubmit, closeEditing }) {
+function TaskList({
+  tasks,
+  onDeleted,
+  onToggleComplete,
+  onToggleEditing,
+  onEditingSubmit,
+  closeEditing,
+  startTimer,
+  stopTimer,
+}) {
   const todos = tasks.map((item) => {
-    const { id, ...itemProps } = item;
+    const { id, isPlaying, timerId, ...itemProps } = item;
 
     return (
       <Task
@@ -15,6 +24,8 @@ function TaskList({ tasks, onDeleted, onToggleComplete, onToggleEditing, onEditi
         onToggleEditing={() => onToggleEditing(id)}
         onEditingSubmit={(newText) => onEditingSubmit(id, newText)}
         closeEditing={(e) => closeEditing(e, id)}
+        startTimer={() => startTimer(id, isPlaying)}
+        stopTimer={() => stopTimer(id, timerId)}
       />
     );
   });

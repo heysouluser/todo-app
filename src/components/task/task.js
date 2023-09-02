@@ -4,6 +4,8 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
 import ru from 'date-fns/locale/ru';
+
+import TaskTimer from '../task-timer';
 import './task.css';
 
 export default class Task extends Component {
@@ -23,8 +25,21 @@ export default class Task extends Component {
   };
 
   render() {
-    const { task, completed, editing, id, date, onDeleted, onToggleComplete, onToggleEditing, closeEditing } =
-      this.props;
+    const {
+      task,
+      completed,
+      editing,
+      id,
+      date,
+      onDeleted,
+      onToggleComplete,
+      onToggleEditing,
+      closeEditing,
+      min,
+      sec,
+      startTimer,
+      stopTimer,
+    } = this.props;
     let classNames = '';
     if (completed) {
       classNames += 'completed';
@@ -38,9 +53,12 @@ export default class Task extends Component {
         {!editing ? (
           <div className="view">
             <input className="toggle" type="checkbox" onChange={onToggleComplete} checked={completed} />
-            <label onClick={onToggleComplete}>
-              <span className="description">{task}</span>
-              <span className="created">
+            <label>
+              <span className="title">{task}</span>
+              <span className="description">
+                <TaskTimer min={min} sec={sec} startTimer={startTimer} stopTimer={stopTimer} />
+              </span>
+              <span className="description created">
                 создано {formatDistanceToNow(date, { includeSeconds: true, addSuffix: true, locale: ru })}
               </span>
             </label>

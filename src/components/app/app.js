@@ -9,25 +9,27 @@ export default class App extends Component {
   maxId = 1;
 
   state = {
-    todoData: [
-      this.createTodoItem('Completed task'),
-      this.createTodoItem('Editing task'),
-      this.createTodoItem('Active task'),
-    ],
+    todoData: [],
     filter: 'All',
     label: '',
     error: null,
+    min: '',
+    sec: '',
   };
 
   deleteItem = (id) => {
+    const todoItem = this.findTodoById(id);
+    if (todoItem && todoItem.timerId) {
+      clearInterval(todoItem.timerId);
+    }
     this.setState(({ todoData }) => ({
       todoData: todoData.filter((t) => t.id !== id),
     }));
   };
 
-  addItem = (text) => {
-    const newItem = this.createTodoItem(text);
-    if (text.trim() !== '') {
+  addItem = (text, min, sec) => {
+    const newItem = this.createTodoItem(text, min, sec);
+    if (text.trim() !== '' && min.trim() !== '' && sec.trim() !== '') {
       this.setState(({ todoData }) => {
         const newArr = [...todoData, newItem];
         return {
@@ -64,18 +66,20 @@ export default class App extends Component {
     }));
   };
 
-  onLabelChange = (e) => {
+  handleChange = (property, value) => {
     this.setState({
-      label: e.target.value,
+      [property]: value,
       error: null,
     });
   };
 
   onSubmit = (e) => {
     e.preventDefault();
-    this.addItem(this.state.label);
+    this.addItem(this.state.label, this.state.min, this.state.sec);
     this.setState({
       label: '',
+      min: '',
+      sec: '',
     });
   };
 
@@ -127,18 +131,66 @@ export default class App extends Component {
     }
   };
 
-  createTodoItem(task) {
+  findTodoById = (id) => this.state.todoData.find((el) => el.id === id);
+
+  updateTodoData = (id, newData) => {
+    this.setState((prevState) => ({
+      todoData: prevState.todoData.map((todoItem) => (todoItem.id === id ? { ...todoItem, ...newData } : todoItem)),
+    }));
+  };
+
+  stopTimer = (id) => {
+    const todoItem = this.findTodoById(id);
+    clearInterval(todoItem.timerId);
+    this.updateTodoData(id, { isPlaying: false });
+  };
+
+  startTimer = (id, isPlaying) => {
+    if (!isPlaying) {
+      const timerId = setInterval(() => {
+        this.updateTimer(id);
+      }, 1000);
+
+      this.updateTodoData(id, { timerId, isPlaying: true });
+    }
+  };
+
+  updateTimer = (id) => {
+    const todoItem = this.findTodoById(id);
+    const { sec, min } = todoItem;
+    let remainSec = sec - 1;
+    let remainMin = min;
+
+    if (remainSec < 0) {
+      remainSec = 59;
+      remainMin -= 1;
+
+      if (remainMin < 0) {
+        remainMin = 0;
+        remainSec = 0;
+        this.stopTimer(id);
+      }
+    }
+
+    this.updateTodoData(id, { sec: remainSec, min: remainMin });
+  };
+
+  createTodoItem(task, min, sec) {
     return {
       task,
       id: this.maxId++,
       completed: false,
       editing: false,
       date: new Date(),
+      min,
+      sec,
+      timerId: null,
+      isPlaying: false,
     };
   }
 
   render() {
-    const { todoData, filter, label, editLabel, error } = this.state;
+    const { todoData, filter, label, editLabel, error, min, sec } = this.state;
 
     const doneCount = todoData.filter((el) => el.completed).length;
     const todoCount = todoData.length - doneCount;
@@ -156,7 +208,14 @@ export default class App extends Component {
 
     return (
       <section className="todoapp">
-        <Header label={label} error={error} onLabelChange={this.onLabelChange} onSubmit={this.onSubmit} />
+        <Header
+          label={label}
+          error={error}
+          handleChange={this.handleChange}
+          onSubmit={this.onSubmit}
+          min={min}
+          sec={sec}
+        />
         <Main
           tasks={filteredData}
           editLabel={editLabel}
@@ -165,6 +224,8 @@ export default class App extends Component {
           onToggleEditing={this.onToggleEditing}
           onEditingSubmit={this.onEditingSubmit}
           closeEditing={this.closeEditing}
+          startTimer={this.startTimer}
+          stopTimer={this.stopTimer}
         />
         <Footer
           toDo={todoCount}

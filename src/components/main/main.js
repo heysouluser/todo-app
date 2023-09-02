@@ -1,7 +1,16 @@
 import './main.css';
 import TaskList from '../task-list';
 
-function Main({ tasks, onDeleted, onToggleComplete, onToggleEditing, onEditingSubmit, closeEditing }) {
+function Main({
+  tasks,
+  onDeleted,
+  onToggleComplete,
+  onToggleEditing,
+  onEditingSubmit,
+  closeEditing,
+  startTimer,
+  stopTimer,
+}) {
   return (
     <section className="main">
       <TaskList
@@ -11,6 +20,8 @@ function Main({ tasks, onDeleted, onToggleComplete, onToggleEditing, onEditingSu
         onToggleEditing={onToggleEditing}
         onEditingSubmit={onEditingSubmit}
         closeEditing={closeEditing}
+        startTimer={startTimer}
+        stopTimer={stopTimer}
       />
     </section>
   );
