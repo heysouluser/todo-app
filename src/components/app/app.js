@@ -72,9 +72,17 @@ export default class App extends Component {
     }));
   };
 
-  handleChange = (property, value) => {
+  // handleChange = (property, value) => {
+  //   this.setState({
+  //     [property]: value,
+  //     error: null,
+  //   });
+  // };
+
+  handleChange = (e) => {
+    const { name, value } = e.target;
     this.setState({
-      [property]: value,
+      [name]: value,
       error: null,
     });
   };
