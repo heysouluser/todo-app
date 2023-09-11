@@ -1,55 +1,97 @@
-import { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import './app.css';
 import Header from '../header';
 import Main from '../main';
 import Footer from '../footer';
 
-export default class App extends Component {
-  maxId = 1;
+export default function App() {
+  const [todoData, setTodoData] = useState([]);
+  const [filter, setFilter] = useState('All');
+  const [label, setLabel] = useState('');
+  const [error, setError] = useState(null);
+  const [min, setMin] = useState('');
+  const [sec, setSec] = useState('');
+  const [uniqId, setUniqId] = useState(10);
 
-  state = {
-    todoData: [],
-    filter: 'All',
-    label: '',
-    error: null,
-    min: '',
-    sec: '',
+  function createTodoItem(task, mn, sc) {
+    setUniqId(uniqId + 1);
+    return {
+      task,
+      mn,
+      sc,
+      isRunning: false,
+      id: uniqId,
+      completed: false,
+      editing: false,
+      date: new Date(),
+    };
+  }
+
+  const updateTodoData = (id, newData) => {
+    setTodoData((prevData) =>
+      prevData.map((todoItem) => (todoItem.id === id ? { ...todoItem, ...newData } : todoItem))
+    );
   };
 
-  updateTodoData = (id, newData) => {
-    this.setState((prevState) => ({
-      todoData: prevState.todoData.map((todoItem) => (todoItem.id === id ? { ...todoItem, ...newData } : todoItem)),
-    }));
+  const startTimer = (id) => {
+    updateTodoData(id, { isRunning: true });
   };
 
-  deleteItem = (id) => {
-    const todoItem = this.findTodoById(id);
-    if (todoItem && todoItem.timerId) {
-      clearInterval(todoItem.timerId);
-    }
-    this.setState(({ todoData }) => ({
-      todoData: todoData.filter((t) => t.id !== id),
-    }));
+  const stopTimer = useCallback((id) => {
+    updateTodoData(id, { isRunning: false });
+  }, []);
+
+  useEffect(() => {
+    const timers = {};
+    todoData.forEach((task) => {
+      if (task.isRunning) {
+        timers[task.id] = setInterval(() => {
+          setTodoData((prevTasks) =>
+            prevTasks.map((t) => {
+              if (t.id === task.id) {
+                const { sc, mn } = t;
+                let remainSec = sc - 1;
+                let remainMin = mn;
+
+                if (remainSec < 0) {
+                  remainSec = 59;
+                  remainMin -= 1;
+
+                  if (remainMin < 0) {
+                    remainMin = 0;
+                    remainSec = 0;
+                    stopTimer(t.id);
+                  }
+                }
+                return { ...t, mn: remainMin, sc: remainSec };
+              }
+              return t;
+            })
+          );
+        }, 1000);
+      }
+    });
+
+    return () => {
+      Object.values(timers).forEach((timer) => clearInterval(timer));
+    };
+  }, [todoData, stopTimer]);
+
+  const deleteItem = (id) => {
+    setTodoData((prevData) => prevData.filter((t) => t.id !== id));
   };
 
-  addItem = (text, min, sec) => {
-    const newItem = this.createTodoItem(text, min, sec);
-    if (text.trim() !== '' && min.trim() !== '' && sec.trim() !== '') {
-      this.setState(({ todoData }) => {
-        const newArr = [...todoData, newItem];
-        return {
-          todoData: newArr,
-        };
-      });
+  const addItem = (text, m, s) => {
+    const newItem = createTodoItem(text, m, s);
+    if (text.trim() !== '' && m.trim() !== '' && s.trim() !== '') {
+      setTodoData((prevData) => [...prevData, newItem]);
     } else {
-      this.setState({
-        error: 'Необходимо заполнить поле',
-      });
+      setError('Необходимо заполнить поле');
     }
   };
 
-  toggleProperty = (arr, id, prop) => {
+  const toggleProperty = (arr, id, prop) => {
     const idx = arr.findIndex((el) => el.id === id);
     const oldItem = arr[idx];
     const newItem = {
@@ -60,166 +102,86 @@ export default class App extends Component {
     return [...arr.slice(0, idx), newItem, ...arr.slice(idx + 1)];
   };
 
-  onToggleComplete = (id) => {
-    this.setState(({ todoData }) => ({
-      todoData: this.toggleProperty(todoData, id, 'completed'),
-    }));
+  const onToggleComplete = (id) => {
+    setTodoData((prevData) => toggleProperty(prevData, id, 'completed'));
   };
 
-  onToggleEditing = (id) => {
-    this.setState(({ todoData }) => ({
-      todoData: this.toggleProperty(todoData, id, 'editing'),
-    }));
+  const onToggleEditing = (id) => {
+    setTodoData((prevData) => toggleProperty(prevData, id, 'editing'));
   };
 
-  // handleChange = (property, value) => {
-  //   this.setState({
-  //     [property]: value,
-  //     error: null,
-  //   });
-  // };
-
-  handleChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    this.setState({
-      [name]: value,
-      error: null,
-    });
+    setError(null);
+    switch (name) {
+      case 'label':
+        setLabel(value);
+        break;
+      case 'min':
+        setMin(value);
+        break;
+      case 'sec':
+        setSec(value);
+        break;
+      default:
+        break;
+    }
   };
 
-  onSubmit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    this.addItem(this.state.label, this.state.min, this.state.sec);
-    this.setState({
-      label: '',
-      min: '',
-      sec: '',
-    });
+    addItem(label, min, sec);
+    setLabel('');
+    setMin('');
+    setSec('');
   };
 
-  onFiltered = (e) => {
-    const filter = e.target.textContent;
-    this.setState({ filter });
+  const onFiltered = (e) => {
+    const newFilter = e.target.textContent;
+    setFilter(newFilter);
   };
 
-  clearCompleted = () => {
-    this.state.todoData
-      .filter((item) => item.completed === true && item.timerId !== null)
-      .forEach((item) => {
-        clearInterval(item.timerId);
-      });
-    this.setState(({ todoData }) => ({
-      todoData: todoData.filter((item) => item.completed !== true),
-    }));
+  const clearCompleted = () => {
+    setTodoData((prevData) => prevData.filter((item) => item.completed !== true));
   };
 
-  onEditingSubmit = (id, newText) => {
-    this.updateTodoData(id, { task: newText, editing: false });
+  const onEditingSubmit = (id, newText) => {
+    updateTodoData(id, { task: newText, editing: false });
   };
 
-  closeEditing = (e, id) => {
+  const closeEditing = (e, id) => {
     if (e.key === 'Escape') {
-      this.updateTodoData(id, { editing: false });
+      updateTodoData(id, { editing: false });
     }
   };
 
-  findTodoById = (id) => this.state.todoData.find((el) => el.id === id);
-
-  stopTimer = (id) => {
-    const todoItem = this.findTodoById(id);
-    clearInterval(todoItem.timerId);
-    this.updateTodoData(id, { isPlaying: false });
-  };
-
-  startTimer = (id, isPlaying) => {
-    if (!isPlaying) {
-      const timerId = setInterval(() => {
-        this.updateTimer(id);
-      }, 1000);
-
-      this.updateTodoData(id, { timerId, isPlaying: true });
+  const doneCount = todoData.filter((el) => el.completed).length;
+  const todoCount = todoData.length - doneCount;
+  const filteredData = todoData.filter((data) => {
+    switch (filter) {
+      case 'Active':
+        return !data.completed;
+      case 'Completed':
+        return data.completed;
+      default:
+        return data;
     }
-  };
+  });
 
-  updateTimer = (id) => {
-    const todoItem = this.findTodoById(id);
-    const { sec, min } = todoItem;
-    let remainSec = sec - 1;
-    let remainMin = min;
-
-    if (remainSec < 0) {
-      remainSec = 59;
-      remainMin -= 1;
-
-      if (remainMin < 0) {
-        remainMin = 0;
-        remainSec = 0;
-        this.stopTimer(id);
-      }
-    }
-
-    this.updateTodoData(id, { sec: remainSec, min: remainMin });
-  };
-
-  createTodoItem(task, min, sec) {
-    return {
-      task,
-      id: this.maxId++,
-      completed: false,
-      editing: false,
-      date: new Date(),
-      min,
-      sec,
-      timerId: null,
-      isPlaying: false,
-    };
-  }
-
-  render() {
-    const { todoData, filter, label, editLabel, error, min, sec } = this.state;
-
-    const doneCount = todoData.filter((el) => el.completed).length;
-    const todoCount = todoData.length - doneCount;
-    const copyData = [...todoData];
-    const filteredData = copyData.filter((data) => {
-      switch (filter) {
-        case 'Active':
-          return !data.completed;
-        case 'Completed':
-          return data.completed;
-        default:
-          return data;
-      }
-    });
-
-    return (
-      <section className="todoapp">
-        <Header
-          label={label}
-          error={error}
-          handleChange={this.handleChange}
-          onSubmit={this.onSubmit}
-          min={min}
-          sec={sec}
-        />
-        <Main
-          tasks={filteredData}
-          editLabel={editLabel}
-          onDeleted={this.deleteItem}
-          onToggleComplete={this.onToggleComplete}
-          onToggleEditing={this.onToggleEditing}
-          onEditingSubmit={this.onEditingSubmit}
-          closeEditing={this.closeEditing}
-          startTimer={this.startTimer}
-          stopTimer={this.stopTimer}
-        />
-        <Footer
-          toDo={todoCount}
-          currentFilter={filter}
-          onFiltered={this.onFiltered}
-          clearCompleted={this.clearCompleted}
-        />
-      </section>
-    );
-  }
+  return (
+    <section className="todoapp">
+      <Header label={label} error={error} handleChange={handleChange} onSubmit={onSubmit} min={min} sec={sec} />
+      <Main
+        tasks={filteredData}
+        onDeleted={deleteItem}
+        onToggleComplete={onToggleComplete}
+        onToggleEditing={onToggleEditing}
+        onEditingSubmit={onEditingSubmit}
+        closeEditing={closeEditing}
+        startTimer={startTimer}
+        stopTimer={stopTimer}
+      />
+      <Footer toDo={todoCount} currentFilter={filter} onFiltered={onFiltered} clearCompleted={clearCompleted} />
+    </section>
+  );
 }
